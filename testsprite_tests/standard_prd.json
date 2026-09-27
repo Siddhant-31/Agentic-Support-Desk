@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "project": "Support Desk App - Auth E2E Test",
+    "date": "2026-02-06",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "This product implements end-to-end authentication testing for the Support Desk App backend, focusing on session-based authentication and API access control using httpOnly cookies.",
+  "core_goals": [
+    "Ensure backend authentication APIs are secure and functional.",
+    "Validate cookie-based session management and enforcement of protected routes.",
+    "Demonstrate reliable API health check status.",
+    "Support dev-only E2E login for testing purposes."
+  ],
+  "key_features": [
+    "Health Status Check API that returns server status for monitoring.",
+    "Authentication APIs including login, session validation, and user info retrieval.",
+    "Dev-only E2E login endpoint for testing authentication flows.",
+    "Cookie-based session management with httpOnly cookies to secure sessions.",
+    "Protected routes that enforce authentication checks and return correct error states when unauthenticated."
+  ],
+  "user_flow_summary": [
+    "Flow 1: Public API health check with GET /status returns 200 and verifies server running state.",
+    "Flow 2: Accessing protected APIs without authentication returns 401 Unauthorized errors.",
+    "Flow 3: Dev-only E2E login via POST /auth/e2e/login sets authenticated session cookie and allows subsequent authenticated requests such as GET /auth/me returning user info."
+  ],
+  "validation_criteria": [
+    "Successful response from GET /status with JSON body { ok: true }.",
+    "GET /auth/me returns 401 when no valid session cookie is present.",
+    "POST /auth/e2e/login with valid user details returns 200 and sets httpOnly session cookie.",
+    "After login, GET /auth/me returns 200 with correct user information.",
+    "Protected routes such as POST /api/support/run respond with 401 when unauthenticated."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "Node.js",
+      "TypeScript",
+      "Express",
+      "LangChain",
+      "Cookie Parser",
+      "CORS",
+      "Scalekit OAuth",
+      "Zod"
+    ],
+    "features": [
+      {
+        "name": "Health Status Check",
+        "description": "Returns server status",
+        "files": [
+          "server/src/index.ts"
+        ],
+        "api_doc": {
+          "openapi": "3.0.0",
+          "info": {
+            "title": "Status API",
+            "version": "1.0.0"
+          },
+          "paths": {
+            "/status": {
+              "get": {
+                "summary": "Get server status",
+                "responses": {
+                  "200": {
+                    "description": "Server is running",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "boolean"
+                            },
+                            "status": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Authentication APIs",
+        "description": "User authentication and session management",
+        "files": [
+          "server/src/auth/auth.routes.ts",
+          "server/src/auth/e2e.routes.ts",
+          "server/src/auth/auth.middleware.ts",
+          "server/src/auth/cookie.ts"
+        ],
+        "api_doc": {
+          "openapi": "3.0.0",
+          "info": {
+            "title": "Auth API",
+            "version": "1.0.0"
+          },
+          "paths": {
+            "/auth/e2e/login": {
+              "post": {
+                "summary": "E2E test login (development only)",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Login successful, session cookie set",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "404": {
+                    "description": "Not in E2E mode"
+                  }
+                }
+              }
+            },
+            "/auth/me": {
+              "get": {
+                "summary": "Get current user info",
+                "security": [
+                  {
+                    "cookieAuth": []
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "User info retrieved",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "user": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "401": {
+                    "description": "Unauthorized - no valid session"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "TC001",
+    "title": "get server status returns ok true",
+    "description": "Test the GET /status endpoint to ensure it returns a 200 status code with a JSON body containing { ok: true } indicating the server is running."
+  },
+  {
+    "id": "TC002",
+    "title": "unauthenticated access to get auth me returns 401",
+    "description": "Test the GET /auth/me endpoint without any session cookie to verify it returns a 401 Unauthorized response indicating no valid session."
+  },
+  {
+    "id": "TC003",
+    "title": "post auth e2e login sets session cookie and returns 200",
+    "description": "Test the POST /auth/e2e/login endpoint with valid user details to ensure it returns a 200 status code, sets an httpOnly session cookie, and responds with { ok: true }."
+  },
+  {
+    "id": "TC004",
+    "title": "authenticated get auth me returns user info",
+    "description": "Test the GET /auth/me endpoint with a valid session cookie to verify it returns a 200 status code and the correct user information in the response body."
+  },
+  {
+    "id": "TC005",
+    "title": "unauthenticated access to protected post api support run returns 401",
+    "description": "Test the POST /api/support/run protected endpoint without authentication to ensure it returns a 401 Unauthorized response."
+  }
+]

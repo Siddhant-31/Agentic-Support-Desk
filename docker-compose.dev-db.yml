@@ -1,0 +1,31 @@
+# Optional: a local Postgres instance with pgvector pre-installed, for
+# development. Not required if you'd rather install Postgres directly
+# or use a hosted option like Supabase - either way, all the app needs
+# is a DATABASE_URL in server/.env pointing at a Postgres with the
+# pgvector extension available.
+#
+# Usage:
+#   docker compose -f docker-compose.dev-db.yml up -d
+#
+# Then in server/.env:
+#   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/support_planner
+#
+# Then, from the server/ folder:
+#   npm run db:migrate
+#   npm run db:seed
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: support_planner
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - support_planner_db_data:/var/lib/postgresql/data
+
+volumes:
+  support_planner_db_data:

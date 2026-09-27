@@ -1,0 +1,10 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    env_file:
+      - ./server/.env
+    ports:
+      - "127.0.0.1:5000:5000"
+    restart: unless-stopped
